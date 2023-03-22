@@ -14,6 +14,26 @@ export const schema = yup.object().shape({
   confirm_password: yup
     .string()
     .required('Vui lòng nhập lại password')
-    .oneOf([yup.ref('password')], 'Password không khớp')
+    .oneOf([yup.ref('password')], 'Password không khớp'),
+  price_min: yup.string().test({
+    name: 'price-not-allowed',
+    message: 'Gia khong hop ly',
+    test: function (value) {
+      const price_min = value
+      const { price_max } = this.parent as { price_min: string; price_max: string }
+      if (price_min !== '' && price_max !== '') return Number(price_max) >= Number(price_min)
+      return price_min !== '' || price_max !== ''
+    }
+  }),
+  price_max: yup.string().test({
+    name: 'price-not-allowed',
+    message: 'Gia khong hop ly',
+    test: function (value) {
+      const price_max = value
+      const { price_min } = this.parent as { price_min: string; price_max: string }
+      if (price_min !== '' && price_max !== '') return Number(price_max) >= Number(price_min)
+      return price_min !== '' || price_max !== ''
+    }
+  })
 })
 export type Schema = yup.InferType<typeof schema>
