@@ -1,4 +1,4 @@
-import { SuccessResponse } from './ultis.type'
+import { SuccessResponse } from './utils.type'
 import { User } from './user.type'
 
 export type AuthReponse = SuccessResponse<{

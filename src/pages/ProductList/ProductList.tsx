@@ -35,7 +35,7 @@ export default function ProductList() {
   const { data } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
-      return productApi.getProduct(queryConfig as ProductListConfig)
+      return productApi.getProducts(queryConfig as ProductListConfig)
     },
     keepPreviousData: true
   })
