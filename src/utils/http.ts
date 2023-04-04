@@ -1,23 +1,22 @@
-import { setAccessTokenToLS, clearAccessToken, getAccessTokenFromLS, setProfileToLS } from './auth'
-import axios, { type AxiosInstance, HttpStatusCode, AxiosError } from 'axios'
+import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
-import { identity } from 'lodash'
-import { AuthReponse } from 'src/types/auth.type'
+import { AuthResponse } from 'src/types/auth.type'
+import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setProfileToLS } from './auth'
+import path from 'src/constants/path'
 
 class Http {
   instance: AxiosInstance
   private accessToken: string
   constructor() {
-    this.accessToken = getAccessTokenFromLS() //lay tu ram , lay tu local no bi cham
+    this.accessToken = getAccessTokenFromLS()
     this.instance = axios.create({
       baseURL: 'https://api-ecom.duthanhduoc.com/',
-      timeout: 1000,
+      timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
       }
     })
     this.instance.interceptors.request.use(
-      //gui len be
       (config) => {
         if (this.accessToken && config.headers) {
           config.headers.authorization = this.accessToken
@@ -29,18 +28,18 @@ class Http {
         return Promise.reject(error)
       }
     )
+    // Add a response interceptor
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config
-
-        if (url === '/login' || url === '/register') {
-          const data = response.data as AuthReponse
+        if (url === path.login || url === path.register) {
+          const data = response.data as AuthResponse
           this.accessToken = data.data.access_token
           setAccessTokenToLS(this.accessToken)
           setProfileToLS(data.data.user)
-        } else if (url === 'logout') {
+        } else if (url === path.logout) {
           this.accessToken = ''
-          clearAccessToken()
+          clearLS()
         }
         return response
       },
@@ -48,7 +47,7 @@ class Http {
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const data: any | undefined = error.response?.data
-          const message = data?.message || error.message
+          const message = data.message || error.message
           toast.error(message)
         }
         return Promise.reject(error)
@@ -56,5 +55,7 @@ class Http {
     )
   }
 }
+
 const http = new Http().instance
+
 export default http

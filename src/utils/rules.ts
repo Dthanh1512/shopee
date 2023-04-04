@@ -34,6 +34,7 @@ export const schema = yup.object().shape({
       if (price_min !== '' && price_max !== '') return Number(price_max) >= Number(price_min)
       return price_min !== '' || price_max !== ''
     }
-  })
+  }),
+  name: yup.string().trim().required('Tên sản phẩm là bắt buộc')
 })
 export type Schema = yup.InferType<typeof schema>

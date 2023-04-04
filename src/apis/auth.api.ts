@@ -1,9 +1,16 @@
+import { AuthResponse } from 'src/types/auth.type'
 import http from 'src/utils/http'
-import { AuthReponse } from 'src/types/auth.type'
 
 const authApi = {
-  registerAccount: (body: { email: string; password: string }) => http.post<AuthReponse>('/register', body),
-  login: (body: { email: string; password: string }) => http.post<AuthReponse>('/login', body),
-  logout: () => http.post('/logout')
+  registerAccount(body: { email: string; password: string }) {
+    return http.post<AuthResponse>('/register', body)
+  },
+  login(body: { email: string; password: string }) {
+    return http.post<AuthResponse>('/login', body)
+  },
+  logout() {
+    return http.post('/logout')
+  }
 }
+
 export default authApi
