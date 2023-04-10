@@ -1,19 +1,21 @@
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import RegisterLayout from './layout/RegisterLayout'
-import Login from './pages/Login'
-import ProductList from './pages/ProductList'
-import Register from './pages/Register'
 import MainLayout from './layout/MainLayout'
-import { useContext } from 'react'
+import { lazy, useContext, Suspense } from 'react'
 import { AppContext } from './contexts/app.context'
 import path from './constants/path'
-import ProductDetail from './pages/ProductDetail'
-import Cart from './pages/Cart'
 import CartLayout from './layout/CartLayout'
 import UserLayout from './pages/User/layouts/LayoutUser'
-import ChangePassword from './pages/User/ChangePassword'
-import HistoryPurchase from './pages/User/HistoryPurchase'
-import Profile from './pages/User/Profile'
+
+const Login = lazy(() => import('./pages/Login'))
+const ProductList = lazy(() => import('./pages/ProductList'))
+const Profile = lazy(() => import('./pages/User/Profile'))
+const Register = lazy(() => import('./pages/Register'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart = lazy(() => import('./pages/Cart'))
+const ChangePassword = lazy(() => import('./pages/User/ChangePassword'))
+const HistoryPurchase = lazy(() => import('./pages/User/HistoryPurchase'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -23,23 +25,33 @@ function RejectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
   return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
 }
-export default function useRouteElement() {
+export default function useRouteElements() {
   const routeElements = useRoutes([
     {
-      path: path.home,
-      element: (
-        <MainLayout>
-          <ProductList />
-        </MainLayout>
-      )
-    },
-    {
-      path: path.productDetail,
-      element: (
-        <MainLayout>
-          <ProductDetail />
-        </MainLayout>
-      )
+      path: '',
+      element: <RejectedRoute />,
+      children: [
+        {
+          path: path.login,
+          element: (
+            <RegisterLayout>
+              <Suspense>
+                <Login />
+              </Suspense>
+            </RegisterLayout>
+          )
+        },
+        {
+          path: path.register,
+          element: (
+            <RegisterLayout>
+              <Suspense>
+                <Register />
+              </Suspense>
+            </RegisterLayout>
+          )
+        }
+      ]
     },
     {
       path: '',
@@ -49,55 +61,78 @@ export default function useRouteElement() {
           path: path.cart,
           element: (
             <CartLayout>
-              <Cart />
+              <Suspense>
+                <Cart />
+              </Suspense>
             </CartLayout>
           )
+        },
+        {
+          path: path.user,
+          element: (
+            <MainLayout>
+              <UserLayout />
+            </MainLayout>
+          ),
+          children: [
+            {
+              path: path.profile,
+              element: (
+                <Suspense>
+                  <Profile />
+                </Suspense>
+              )
+            },
+            {
+              path: path.changePassword,
+              element: (
+                <Suspense>
+                  <ChangePassword />
+                </Suspense>
+              )
+            },
+            {
+              path: path.historyPurchase,
+              element: (
+                <Suspense>
+                  <HistoryPurchase />
+                </Suspense>
+              )
+            }
+          ]
         }
       ]
     },
     {
-      path: path.user,
+      path: path.productDetail,
       element: (
         <MainLayout>
-          <UserLayout />
+          <Suspense>
+            <ProductDetail />
+          </Suspense>
         </MainLayout>
-      ),
-      children: [
-        {
-          path: path.profile,
-          element: <Profile />
-        },
-        {
-          path: path.changePassword,
-          element: <ChangePassword />
-        },
-        {
-          path: path.historyPurchase,
-          element: <HistoryPurchase />
-        }
-      ]
+      )
     },
     {
       path: '',
-      element: <RejectedRoute />,
-      children: [
-        {
-          path: path.register,
-          element: (
-            <RegisterLayout>
-              <Register />
-            </RegisterLayout>
-          )
-        },
-        {
-          path: path.login,
-          element: (
-            <RegisterLayout>
-              <Login />
-            </RegisterLayout>
-          )
-        }
-      ]
+      index: true,
+      element: (
+        <MainLayout>
+          <Suspense>
+            <ProductList />
+          </Suspense>
+        </MainLayout>
+      )
+    },
+    {
+      path: '*',
+      element: (
+        <MainLayout>
+          <Suspense>
+            <NotFound />
+          </Suspense>
+        </MainLayout>
+      )
     }
   ])
   return routeElements

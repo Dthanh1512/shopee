@@ -6,6 +6,8 @@ import { AppContext } from 'src/contexts/app.context'
 import { purchasesStatus } from 'src/constants/purchase'
 import { Link } from 'react-router-dom'
 import path from 'src/constants/path'
+import UserImage from 'src/assets/images/user.svg'
+import { getAvatarUrl } from 'src/utils/utils'
 
 export default function NavHeader() {
   const queryClient = useQueryClient()
@@ -85,13 +87,9 @@ export default function NavHeader() {
           }
         >
           <div className='mr-2 h-6 w-6 flex-shrink-0'>
-            <img
-              src='https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn'
-              alt='avatar'
-              className='h-full w-full rounded-full object-cover'
-            />
+            <img src={getAvatarUrl(profile?.avatar)} alt='avatar' className='h-full w-full rounded-full object-cover' />
           </div>
-          <div>{profile?.email}</div>
+          <div>{profile?.name}</div>
         </Popover>
       )}
       {!isAuthenticated && (
