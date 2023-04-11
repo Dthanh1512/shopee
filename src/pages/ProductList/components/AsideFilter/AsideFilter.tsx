@@ -10,6 +10,7 @@ import { Category } from 'src/types/category.type'
 import { schema } from 'src/utils/rules'
 import { QueryConfig } from '../../ProductList'
 import RatingStart from '../RatingStart'
+import { useTranslation } from 'react-i18next'
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
@@ -21,6 +22,7 @@ type FormData = {
   price_max: string
 }
 export default function AsideFilter({ categories, queryConfig }: Props) {
+  const { t } = useTranslation('home')
   const { category } = queryConfig
   const {
     control,
@@ -76,7 +78,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             </g>
           </g>
         </svg>
-        Tất cả danh mục
+        {t('aside filter.all categories')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <ul>
@@ -125,7 +127,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             />
           </g>
         </svg>
-        Bộ lọc tìm kiếm
+        {t('aside filter.filter search')}
       </Link>
       <div className='my-4 h-[1px] bg-gray-300' />
       <div className='my-5'>
